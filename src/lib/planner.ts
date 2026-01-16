@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 import { useTaskStore } from './tasks';
 import { useGameStore } from './gamification';
 import { useProjectStore } from './projects';
+import { toLocalDateString } from '@/lib/utils';
 
 // Initialize Groq
 import Groq from 'groq-sdk';
@@ -21,7 +22,12 @@ export interface Suggestion {
     time: string;
     type: TimeBlockType;
     description?: string;
+    taskId?: number;
 }
+
+// ... (skipping to addToTimeline)
+
+
 
 export interface Message {
     id: string;
@@ -38,7 +44,12 @@ export interface TimelineItem {
     type: TimeBlockType;
     status: 'planned' | 'completed';
     date?: string; // Format: YYYY-MM-DD
+    taskId?: number; // Linked Task ID (optional)
 }
+
+// ...
+
+
 
 interface PlannerState {
     messages: Message[];
@@ -180,13 +191,17 @@ export const usePlannerStore = create<PlannerState>()(
             },
 
             addToTimeline: (suggestion) => {
-                const { timeline } = get();
+                const { timeline, selectedDate } = get();
+                // Ensure selectedDate is a Date object
+                const date = selectedDate instanceof Date ? selectedDate : new Date(selectedDate);
                 const newItem: TimelineItem = {
                     id: Date.now().toString(),
                     time: suggestion.time,
                     title: suggestion.title,
                     type: suggestion.type,
-                    status: 'planned'
+                    status: 'planned',
+                    date: toLocalDateString(date), // Format: YYYY-MM-DD
+                    taskId: suggestion.taskId
                 };
                 // Simple sort by time
                 const newTimeline = [...timeline, newItem].sort((a, b) => a.time.localeCompare(b.time));
@@ -194,6 +209,15 @@ export const usePlannerStore = create<PlannerState>()(
             },
 
             removeFromTimeline: (id) => {
+                const { timeline } = get();
+                const item = timeline.find(t => t.id === id);
+
+                // If it's linked to a task, unschedule the task
+                if (item?.taskId) {
+                    const { updateTask } = useTaskStore.getState();
+                    updateTask(item.taskId, { scheduledDate: undefined });
+                }
+
                 set(state => ({
                     timeline: state.timeline.filter(t => t.id !== id)
                 }));
@@ -205,6 +229,24 @@ export const usePlannerStore = create<PlannerState>()(
         }),
         {
             name: 'personal-cms-planner-storage',
+            storage: {
+                getItem: (name) => {
+                    const str = localStorage.getItem(name);
+                    if (!str) return null;
+                    const data = JSON.parse(str);
+                    // Convert selectedDate string back to Date object
+                    if (data.state?.selectedDate) {
+                        data.state.selectedDate = new Date(data.state.selectedDate);
+                    }
+                    return data;
+                },
+                setItem: (name, value) => {
+                    localStorage.setItem(name, JSON.stringify(value));
+                },
+                removeItem: (name) => {
+                    localStorage.removeItem(name);
+                }
+            }
         }
     )
 );

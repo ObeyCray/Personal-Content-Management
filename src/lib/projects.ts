@@ -43,7 +43,7 @@ const initialProjects: Project[] = [
         progressMode: 'auto',
         createdAt: Date.now(),
         color: 'from-red-500 to-orange-500',
-        icon: '📺',
+        icon: 'tv',
         deadline: '2026-03-01'
     },
     {
@@ -55,7 +55,7 @@ const initialProjects: Project[] = [
         progressMode: 'auto',
         createdAt: Date.now(),
         color: 'from-purple-500 to-indigo-500',
-        icon: '🌐'
+        icon: 'language'
     }
 ];
 

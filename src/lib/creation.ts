@@ -123,17 +123,17 @@ Wrap it up with a CTA or question for engagement.
 
 Hey [Name],
 
-## 📌 This Week's Highlight
+## This Week's Highlight
 Main story or update...
 
-## 📚 What I'm Working On
+## What I'm Working On
 - Update 1
 - Update 2
 
-## 💡 Quick Tips
+## Quick Tips
 3 actionable tips...
 
-## 🔗 Worth Checking Out
+## Worth Checking Out
 - Link 1
 - Link 2
 
@@ -338,7 +338,7 @@ Womit möchtest du anfangen?`;
         const suggestions = {
             blog: '• "10 Lektionen, die ich gelernt habe..."\n• "Der komplette Guide zu..."\n• "Warum [Thema] alles verändert..."',
             video: '• Tutorial: "Wie man..."\n• "X vs Y: Was ist besser?"\n• "Mein Prozess für..."',
-            social: '• "🧵 Thread: Alles über..."\n• "Heiße Meinung:..."\n• "Was dir niemand über... sagt"',
+            social: '• "Thread: Alles über..."\n• "Heiße Meinung:..."\n• "Was dir niemand über... sagt"',
             newsletter: '• "Diese Woche in [Deine Nische]"\n• "5 Ressourcen, die du brauchst"\n• "Behind the Scenes: Meine Woche"',
             docs: '• "Einstiegs-Guide"\n• "API-Referenz"\n• "Best Practices"',
             podcast: '• "Interview mit..."\n• "Deep Dive: [Thema]"\n• "Q&A Episode"'

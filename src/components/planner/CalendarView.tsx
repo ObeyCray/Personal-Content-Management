@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from "lucide-react";
 import { usePlannerStore } from "@/lib/planner";
+import { useTaskStore } from "@/lib/tasks";
+import { toLocalDateString } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 type ViewMode = "month" | "week" | "day";
@@ -16,13 +18,56 @@ interface CalendarEvent {
 }
 
 export function CalendarView() {
-    const { selectedDate: storedDate, setSelectedDate: setStoredSelectedDate } = usePlannerStore();
+    const { selectedDate: storedDate, setSelectedDate: setStoredSelectedDate, timeline } = usePlannerStore();
+    const tasks = useTaskStore(state => state.tasks);
     const [currentDate, setCurrentDate] = useState(new Date());
     const [viewMode, setViewMode] = useState<ViewMode>("month");
-    const [localSelectedDate, setLocalSelectedDate] = useState(storedDate);
+    // Ensure storedDate is always a Date object (handles localStorage deserialization)
+    const [localSelectedDate, setLocalSelectedDate] = useState(
+        storedDate instanceof Date ? storedDate : new Date(storedDate)
+    );
 
     const currentMonth = currentDate.getMonth();
     const currentYear = currentDate.getFullYear();
+
+    // Check if a specific day has timeline items
+    const hasTimelineItems = (day: number) => {
+        const date = new Date(currentYear, currentMonth, day);
+        const dateStr = toLocalDateString(date);
+        return timeline.some(item => item.date === dateStr);
+    };
+
+    // Check if a specific day has scheduled tasks
+    const hasScheduledTasks = (day: number) => {
+        const date = new Date(currentYear, currentMonth, day);
+        const dateStr = toLocalDateString(date);
+        return tasks.some(task => task.scheduledDate === dateStr);
+    };
+
+    // Cleanup Effect: Remove scheduledDate from tasks that are not in the timeline
+    // This fixes "ghost dots" from legacy items or sync errors
+    useEffect(() => {
+        const cleanupOrphans = () => {
+            const { updateTask } = useTaskStore.getState();
+            const scheduledTasks = tasks.filter(t => t.scheduledDate);
+
+            scheduledTasks.forEach(task => {
+                // Check if this task exists in the timeline
+                // We match by taskId OR (fuzzy match) by title and date for legacy items
+                const hasTimelineEntry = timeline.some(item =>
+                    item.taskId === task.id ||
+                    (item.title === task.title && item.date === task.scheduledDate)
+                );
+
+                if (!hasTimelineEntry) {
+                    console.log("Cleaning up orphaned task:", task.title);
+                    updateTask(task.id, { scheduledDate: undefined });
+                }
+            });
+        };
+
+        cleanupOrphans();
+    }, [timeline, tasks]); // Run when timeline or tasks change
 
     const monthNames = [
         "Januar", "Februar", "März", "April", "Mai", "Juni",
@@ -218,10 +263,15 @@ export function CalendarView() {
                             >
                                 <span className="text-base font-medium">{dayInfo.day}</span>
 
-                                {/* Event indicator (placeholder) */}
-                                {dayInfo.isCurrentMonth && dayInfo.day % 7 === 0 && (
+                                {/* Event indicators - shows dots for timeline items and tasks */}
+                                {dayInfo.isCurrentMonth && (hasTimelineItems(dayInfo.day) || hasScheduledTasks(dayInfo.day)) && (
                                     <div className="absolute bottom-1 left-1/2 -translate-x-1/2 flex gap-1">
-                                        <div className="w-1 h-1 rounded-full bg-primary/60" />
+                                        {hasTimelineItems(dayInfo.day) && (
+                                            <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                        )}
+                                        {hasScheduledTasks(dayInfo.day) && (
+                                            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+                                        )}
                                     </div>
                                 )}
 

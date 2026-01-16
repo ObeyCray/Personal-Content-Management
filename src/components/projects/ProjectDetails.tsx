@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/Button";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import { X, Calendar, Target, Clock, TrendingUp, CheckCircle2, Circle, Pencil, Plus, Trophy, Trash2, Zap, Gauge, Sparkles } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { TaskFormDialog } from "@/components/projects/TaskFormDialog";
@@ -126,7 +127,9 @@ export function ProjectDetails({ open, onClose, project, tasks, onEdit, initialT
                 {/* Header */}
                 <div className="flex items-start justify-between p-6 border-b border-white/10">
                     <div className="flex items-start gap-4 flex-1">
-                        <span className="text-5xl">{project.icon}</span>
+                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${project.color} flex items-center justify-center shadow-lg`}>
+                            <MaterialIcon icon={project.icon || "tv"} size={36} className="text-white" />
+                        </div>
                         <div className="flex-1">
                             <h2 className="text-3xl font-bold text-foreground mb-2">{project.title}</h2>
                             <div className="flex items-center gap-3">
@@ -213,7 +216,7 @@ export function ProjectDetails({ open, onClose, project, tasks, onEdit, initialT
                             <div className="space-y-2">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center text-2xl`}>
-                                        {project.icon}
+                                        <MaterialIcon icon={project.icon || "tv"} size={24} />
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground uppercase tracking-wider">Beschreibung</p>

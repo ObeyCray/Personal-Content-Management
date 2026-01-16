@@ -2,6 +2,7 @@
 
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { Button } from "@/components/ui/Button";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import { Play, FolderKanban, TrendingUp, CheckCircle2, Calendar } from "lucide-react";
 import { XPBar } from "@/components/gamification/XPBar";
 import { useProjectStore } from "@/lib/projects";
@@ -76,7 +77,9 @@ export default function Home() {
                                     >
                                         <div className="flex items-start justify-between mb-2">
                                             <div className="flex items-center gap-2">
-                                                <span className="text-2xl">{project.icon}</span>
+                                                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${project.color} flex items-center justify-center shadow flex-shrink-0`}>
+                                                    <MaterialIcon icon={project.icon || "tv"} size={20} className="text-white" />
+                                                </div>
                                                 <div>
                                                     <h3 className="font-bold text-base">{project.title}</h3>
                                                     <p className="text-xs text-muted-foreground">{completed}/{projectTasks.length} Tasks</p>

@@ -88,7 +88,8 @@ export const useGameStore = create<GameState>()(
                     newXp -= currentNextLevelXp;
                     newLevel++;
                     currentNextLevelXp = newLevel * 1000;
-                    toast.success(`Level Up! You reached Level ${newLevel}! 🚀`);
+                    toast.success(`Level Up! Du hast Level ${newLevel} erreicht!`);
+
                 }
 
                 set({ xp: newXp, level: newLevel });

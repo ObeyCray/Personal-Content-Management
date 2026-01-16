@@ -5,6 +5,7 @@ import { useProjectStore } from "@/lib/projects";
 import { useTaskStore } from "@/lib/tasks";
 import { SpotlightCard } from "@/components/ui/SpotlightCard";
 import { Button } from "@/components/ui/Button";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import { Calendar, Target, TrendingUp, Clock, Plus, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { gsap, useGSAP } from "@/lib/gsap";
@@ -179,7 +180,9 @@ export default function ProjectsPage() {
                             <div>
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
-                                        <span className="text-4xl">{project.icon}</span>
+                                        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
+                                            <MaterialIcon icon={project.icon || "tv"} size={28} className="text-white" />
+                                        </div>
                                         <div>
                                             <h3 className="text-2xl font-bold text-foreground">{project.title}</h3>
                                             <span className={`

@@ -10,6 +10,7 @@ export interface Task {
     projectId?: string; // Link to Project
     isMilestone?: boolean;
     parentTaskId?: number; // For sub-tasks: references parent task ID
+    scheduledDate?: string; // Format: YYYY-MM-DD - for planner integration
 }
 
 const initialTasks: Task[] = [

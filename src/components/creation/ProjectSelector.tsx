@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useProjectStore } from "@/lib/projects";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import { Check, FolderKanban, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -75,7 +76,9 @@ export function ProjectSelector({ open, onClose, onSelect }: ProjectSelectorProp
                                     )}
                                 >
                                     <div className="flex items-start gap-3">
-                                        <span className="text-2xl">{project.icon}</span>
+                                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${project.color} flex items-center justify-center shadow-lg flex-shrink-0`}>
+                                            <MaterialIcon icon={project.icon || "tv"} size={24} className="text-white" />
+                                        </div>
                                         <div className="flex-1 min-w-0">
                                             <h3 className="text-sm font-semibold text-white mb-1">
                                                 {project.title}

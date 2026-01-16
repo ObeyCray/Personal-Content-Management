@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { MaterialIcon } from "@/components/ui/MaterialIcon";
 import { X, Smile, Palette } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import type { Project } from "@/lib/projects";
@@ -15,7 +16,12 @@ interface ProjectFormDialogProps {
     mode?: "create" | "edit";
 }
 
-const EMOJI_OPTIONS = ["📺", "🌐", "🎨", "💻", "📱", "🚀", "⚡", "🎯", "🔥", "💡", "🎮", "📚", "🎵", "🏃", "🌟", "💪"];
+const ICON_OPTIONS = [
+    "tv", "language", "palette", "computer", "phone_android", "rocket_launch",
+    "bolt", "flag", "local_fire_department", "lightbulb", "sports_esports",
+    "menu_book", "music_note", "directions_run", "star", "fitness_center",
+    "videocam", "brush", "code", "campaign", "shopping_cart", "article"
+];
 
 const COLOR_OPTIONS = [
     { name: "Red-Orange", value: "from-red-500 to-orange-500" },
@@ -41,7 +47,7 @@ export function ProjectFormDialog({ open, onClose, onSubmit, initialData, mode =
         description: initialData?.description || "",
         status: initialData?.status || "planning" as Project["status"],
         deadline: initialData?.deadline || "",
-        icon: initialData?.icon || "📺",
+        icon: initialData?.icon || "tv",
         color: initialData?.color || "from-purple-500 to-indigo-500",
     });
 
@@ -120,22 +126,23 @@ export function ProjectFormDialog({ open, onClose, onSubmit, initialData, mode =
                                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                                     className="w-full p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors flex items-center justify-between"
                                 >
-                                    <span className="text-2xl">{formData.icon}</span>
+                                    <MaterialIcon icon={formData.icon} size={24} />
                                     <Smile className="w-4 h-4 text-muted-foreground" />
                                 </button>
                                 {showEmojiPicker && (
-                                    <div className="absolute top-full mt-2 w-full bg-gray-900 border border-white/10 rounded-lg p-3 grid grid-cols-8 gap-2 z-10 shadow-xl">
-                                        {EMOJI_OPTIONS.map((emoji) => (
+                                    <div className="absolute top-full mt-2 w-full bg-gray-900 border border-white/10 rounded-lg p-3 grid grid-cols-8 gap-2 z-10 shadow-xl max-h-64 overflow-y-auto">
+                                        {ICON_OPTIONS.map((iconName) => (
                                             <button
-                                                key={emoji}
+                                                key={iconName}
                                                 type="button"
                                                 onClick={() => {
-                                                    setFormData({ ...formData, icon: emoji });
+                                                    setFormData({ ...formData, icon: iconName });
                                                     setShowEmojiPicker(false);
                                                 }}
-                                                className="text-2xl hover:bg-white/10 p-2 rounded transition-colors"
+                                                className="hover:bg-white/10 p-2 rounded transition-colors flex items-center justify-center"
+                                                title={iconName}
                                             >
-                                                {emoji}
+                                                <MaterialIcon icon={iconName} size={24} />
                                             </button>
                                         ))}
                                     </div>
