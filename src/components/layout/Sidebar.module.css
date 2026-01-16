@@ -1,0 +1,88 @@
+.sidebar {
+    width: 260px;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: rgba(10, 10, 15, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    z-index: 50;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapsed {
+    width: 80px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 2rem;
+    color: hsl(var(--foreground));
+}
+
+.logoIcon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
+    border-radius: 8px;
+}
+
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.navItem {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    color: hsl(var(--muted-foreground));
+    text-decoration: none;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.navItem:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: hsl(var(--foreground));
+}
+
+.active {
+    background: rgba(255, 255, 255, 0.08);
+    color: hsl(var(--foreground));
+    font-weight: 500;
+}
+
+.activeIndicator {
+    position: absolute;
+    left: 0;
+    height: 60%;
+    width: 3px;
+    background: hsl(var(--primary));
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 10px hsl(var(--primary));
+}
+
+.footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+
+.userCard {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
