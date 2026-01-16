@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/Button";
 import { MaterialIcon } from "@/components/ui/MaterialIcon";
-import { X, Calendar, Target, Clock, TrendingUp, CheckCircle2, Circle, Pencil, Plus, Trophy, Trash2, Zap, Gauge, Sparkles } from "lucide-react";
+import { X, Calendar, Target, Clock, TrendingUp, CheckCircle2, Circle, Pencil, Plus, Trophy, Trash2, Zap, Gauge, Sparkles, FileText, Video, MessageSquare, Mail, BookOpen, Mic } from "lucide-react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { TaskFormDialog } from "@/components/projects/TaskFormDialog";
 import { ProjectAIPlanner } from "@/components/projects/ProjectAIPlanner";
@@ -11,7 +11,7 @@ import { HierarchicalTaskList } from "./HierarchicalTaskList";
 import { toast } from "sonner";
 import { useTaskStore } from "@/lib/tasks";
 import { useProjectStore } from "@/lib/projects";
-import type { Project } from "@/lib/projects";
+import type { Project, ProjectContentItem } from "@/lib/projects";
 import type { Task } from "@/lib/tasks";
 
 interface ProjectDetailsProps {
@@ -23,7 +23,7 @@ interface ProjectDetailsProps {
     initialTab?: Tab; // Optional: which tab to open initially
 }
 
-const TABS = ["Übersicht", "Tasks", "AI Planner", "Einstellungen"] as const;
+const TABS = ["Übersicht", "Tasks", "Content", "AI Planner", "Einstellungen"] as const;
 type Tab = typeof TABS[number];
 
 export function ProjectDetails({ open, onClose, project, tasks, onEdit, initialTab }: ProjectDetailsProps) {
@@ -34,6 +34,7 @@ export function ProjectDetails({ open, onClose, project, tasks, onEdit, initialT
     const [deletingTaskId, setDeletingTaskId] = useState<number | null>(null);
     const [focusedTask, setFocusedTask] = useState<Task | null>(null); // For AI Planner focus
     const [collapsedTasks, setCollapsedTasks] = useState<Set<number>>(new Set()); // Track collapsed parent tasks
+    const [selectedContent, setSelectedContent] = useState<ProjectContentItem | null>(null);
     const dialogRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -334,6 +335,72 @@ export function ProjectDetails({ open, onClose, project, tasks, onEdit, initialT
                         </div>
                     )}
 
+                    {activeTab === "Content" && (
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-bold">Erstellter Content</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    {project.contentItems?.length || 0} Einträge
+                                </p>
+                            </div>
+
+                            {!project.contentItems || project.contentItems.length === 0 ? (
+                                <div className="text-center py-12 bg-white/5 rounded-xl border border-white/10">
+                                    <FileText className="w-12 h-12 text-white/20 mx-auto mb-3" />
+                                    <h3 className="text-lg font-medium mb-1">Noch kein Content</h3>
+                                    <p className="text-muted-foreground text-sm max-w-sm mx-auto mb-4">
+                                        Du hast noch keinen Content aus dem Creation Studio in diesem Projekt gespeichert.
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {project.contentItems.map((item) => {
+                                        const Icon = {
+                                            blog: FileText,
+                                            video: Video,
+                                            social: MessageSquare,
+                                            newsletter: Mail,
+                                            docs: BookOpen,
+                                            podcast: Mic
+                                        }[item.type] || FileText;
+
+                                        return (
+                                            <button
+                                                key={item.id}
+                                                onClick={() => setSelectedContent(item)}
+                                                className="group text-left p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 transition-all flex flex-col h-full"
+                                            >
+                                                <div className="flex items-start justify-between mb-3 w-full">
+                                                    <div className={`
+                                                        w-10 h-10 rounded-lg flex items-center justify-center
+                                                        ${item.type === 'blog' ? 'bg-blue-500/20 text-blue-400' : ''}
+                                                        ${item.type === 'video' ? 'bg-red-500/20 text-red-400' : ''}
+                                                        ${item.type === 'social' ? 'bg-pink-500/20 text-pink-400' : ''}
+                                                        ${item.type === 'newsletter' ? 'bg-amber-500/20 text-amber-400' : ''}
+                                                        ${item.type === 'docs' ? 'bg-emerald-500/20 text-emerald-400' : ''}
+                                                        ${item.type === 'podcast' ? 'bg-purple-500/20 text-purple-400' : ''}
+                                                    `}>
+                                                        <Icon className="w-5 h-5" />
+                                                    </div>
+                                                    <div className="text-xs text-muted-foreground bg-black/20 px-2 py-1 rounded">
+                                                        {new Date(item.createdAt).toLocaleDateString('de-DE')}
+                                                    </div>
+                                                </div>
+                                                <h4 className="font-semibold text-foreground mb-2 line-clamp-1">{item.title}</h4>
+                                                <p className="text-sm text-muted-foreground line-clamp-3 mb-4 flex-1">
+                                                    {item.content.replace(/[#*`]/g, '').slice(0, 100)}...
+                                                </p>
+                                                <div className="w-full pt-3 border-t border-white/5 flex items-center text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    Jetzt lesen →
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {activeTab === "AI Planner" && (
                         <div>
                             <ProjectAIPlanner
@@ -420,6 +487,65 @@ export function ProjectDetails({ open, onClose, project, tasks, onEdit, initialT
                                     className="flex-1 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30"
                                 >
                                     Löschen
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Content Viewer Dialog */}
+                {selectedContent && (
+                    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md" onClick={() => setSelectedContent(null)}>
+                        <div
+                            className="w-full max-w-3xl max-h-[85vh] bg-gray-900 border border-white/10 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex items-center justify-between p-6 border-b border-white/10 bg-white/5">
+                                <div>
+                                    <div className="flex items-center gap-3 mb-2">
+                                        <span className={`
+                                            px-2 py-0.5 rounded text-xs uppercase tracking-wider font-semibold
+                                            ${selectedContent.type === 'blog' ? 'bg-blue-500/20 text-blue-400' : ''}
+                                            ${selectedContent.type === 'video' ? 'bg-red-500/20 text-red-400' : ''}
+                                            ${selectedContent.type === 'social' ? 'bg-pink-500/20 text-pink-400' : ''}
+                                            ${selectedContent.type === 'newsletter' ? 'bg-amber-500/20 text-amber-400' : ''}
+                                            ${selectedContent.type === 'docs' ? 'bg-emerald-500/20 text-emerald-400' : ''}
+                                            ${selectedContent.type === 'podcast' ? 'bg-purple-500/20 text-purple-400' : ''}
+                                        `}>
+                                            {selectedContent.type}
+                                        </span>
+                                        <span className="text-sm text-muted-foreground">
+                                            {new Date(selectedContent.createdAt).toLocaleString('de-DE')}
+                                        </span>
+                                    </div>
+                                    <h3 className="text-2xl font-bold">{selectedContent.title}</h3>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedContent(null)}
+                                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                                >
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-8 bg-[#0a0a0f]">
+                                <div className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300 font-sans">
+                                    <pre className="whitespace-pre-wrap font-sans bg-transparent border-none p-0 m-0 text-base leading-relaxed">
+                                        {selectedContent.content}
+                                    </pre>
+                                </div>
+                            </div>
+                            <div className="p-4 border-t border-white/10 bg-white/5 flex justify-end gap-2">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(selectedContent.content);
+                                        toast.success('Inhalt kopiert!');
+                                    }}
+                                >
+                                    Kopieren
+                                </Button>
+                                <Button onClick={() => setSelectedContent(null)}>
+                                    Schließen
                                 </Button>
                             </div>
                         </div>

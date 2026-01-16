@@ -65,22 +65,24 @@ export function TimelineView() {
                 className="relative border-l border-white/10 ml-3 space-y-6 flex-1 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/10"
             >
                 {filteredTimeline.length === 0 && (
-                    <motion.div
-                        variants={fadeIn}
-                        className="ml-8 mt-16 p-8 rounded-2xl border border-dashed border-white/20 bg-gradient-to-br from-white/5 to-white/[0.02] text-center backdrop-blur-sm"
-                    >
-                        <div className="inline-flex p-4 rounded-2xl bg-primary/10 border border-primary/20 mb-4">
-                            <Calendar className="w-8 h-8 text-primary" />
-                        </div>
-                        <h4 className="text-white text-lg font-semibold mb-2">Noch nichts geplant</h4>
-                        <p className="text-muted-foreground text-sm mb-4 max-w-[280px] mx-auto">
-                            Füge einen neuen Eintrag hinzu oder ordne bestehende Tasks diesem Tag zu.
-                        </p>
-                        <div className="flex flex-col gap-2 items-center">
-                            <AddTimelineDialog selectedDate={selectedDate} />
-                            <TaskScheduler selectedDate={selectedDate} />
-                        </div>
-                    </motion.div>
+                    <div className="h-full flex flex-col items-center justify-center -ml-3">
+                        <motion.div
+                            variants={fadeIn}
+                            className="p-8 rounded-2xl border border-dashed border-white/20 bg-gradient-to-br from-white/5 to-white/[0.02] text-center backdrop-blur-sm shadow-xl"
+                        >
+                            <div className="inline-flex p-4 rounded-2xl bg-primary/10 border border-primary/20 mb-4 shadow-inner">
+                                <Calendar className="w-8 h-8 text-primary" />
+                            </div>
+                            <h4 className="text-white text-lg font-semibold mb-2">Noch nichts geplant</h4>
+                            <p className="text-muted-foreground text-sm mb-6 max-w-[280px] mx-auto leading-relaxed">
+                                Füge einen neuen Eintrag hinzu oder ordne bestehende Tasks diesem Tag zu.
+                            </p>
+                            <div className="flex flex-col gap-3 items-center w-full">
+                                <AddTimelineDialog selectedDate={selectedDate} />
+                                <TaskScheduler selectedDate={selectedDate} />
+                            </div>
+                        </motion.div>
+                    </div>
                 )}
 
                 <AnimatePresence mode="popLayout">
